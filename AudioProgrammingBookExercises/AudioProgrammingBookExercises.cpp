@@ -24,10 +24,21 @@ Prints the notes of a major scale in ascending steps.
 int ex2();
 int ex2_v1();
 
+/*
+Transposing a note by any number of semitones
+*/
+int ex3();
+int ex3_mod12(int note);
+
+/*
+Create a matrix with all the serial forms that derive from a single tone row.
+*/
+int ex4();
+
 int main() {
 	int res = 0;
 
-	res = ex2_v1();
+	res = ex4();
 
 	_getch();
 	return res;
@@ -244,6 +255,85 @@ int ex2_v1() {
 	else {
 		printf("%s: invalid key\n", key);
 		return 1;
+	}
+
+	return 0;
+}
+
+int ex3() {
+	char note[3], **p1, **p2,
+		*table[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+	int interval;
+
+	printf("Enter base note (capitals, use # for sharps, eg. A#): ");
+	scanf("%s", note);
+
+	printf("Enter interval in semitones: ");
+	scanf("%d", &interval);
+
+	p1 = table;
+	p2 = table + 11;
+
+	while (strcmp(*p1, note)) {
+		p1++;
+
+		if (p1 > p2) {
+			printf("could not find %s\n", note);
+			return 1;
+		}
+	}
+
+	p1 += ex3_mod12(interval);
+
+	if (p1 > p2) {
+		p1 -= 12;
+	}
+
+	printf("%s transposed by %d semitones is %s\n", note, interval, *p1);
+}
+
+int ex3_mod12(int note) {
+	while (note < 0) {
+		note += 12;
+	}
+	while (note >= 12) {
+		note -= 12;
+	}
+
+	return note;
+}
+
+int ex4() {
+	int series[12][12], offset;
+	int n, m, i;
+	char *table[12] = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+
+	/*char *input[13] = { "ZZZ", "1", "0", "2", "7", "1", "2", "2", "5", "6", "11", "12", "10" };*/
+
+	char *input[13] = { "ZZZ", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
+
+	for (n = 0; n < 12; n++) {
+		series[0][n] = ex3_mod12(atoi(input[n + 1]));
+	}
+
+	/* create inversion in column 1 */
+	for (m = 1; m < 12; m++) {
+		series[m][0] = ex3_mod12(series[m - 1][0] + series[0][m - 1] - series[0][m]);
+	}
+
+	/* create all transpositions */
+	for (m = 1; m < 12; m++) {
+		for (n = 1; n < 12; n++) {
+			series[m][n] = ex3_mod12(series[0][n] + series[m][0] - series[0][0]);
+		}
+	}
+
+	for (m = 0; m < 12; m++) {
+		for (n = 0; n < 12; n++) {
+			printf("%s\t", table[series[m][n]]);
+		}
+
+		printf("\n");
 	}
 
 	return 0;
