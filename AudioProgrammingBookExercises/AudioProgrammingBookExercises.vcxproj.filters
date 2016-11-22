@@ -6,9 +6,11 @@
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="ex5\Dodecaphonic_ex5.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AudioProgrammingBookExercises.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="ex5\Dodecaphonic_ex5.cpp" />
   </ItemGroup>
 </Project>

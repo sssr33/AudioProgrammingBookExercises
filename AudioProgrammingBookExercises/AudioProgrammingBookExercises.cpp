@@ -2,6 +2,7 @@
 //
 
 #include "stdafx.h"
+#include "ex5/Dodecaphonic_ex5.h"
 
 #include <cstdio>
 #include <string>
@@ -35,10 +36,12 @@ Create a matrix with all the serial forms that derive from a single tone row.
 */
 int ex4();
 
+int ex5_main();
+
 int main() {
 	int res = 0;
 
-	res = ex4();
+	res = ex5_main();
 
 	_getch();
 	return res;
@@ -335,6 +338,57 @@ int ex4() {
 
 		printf("\n");
 	}
+
+	return 0;
+}
+
+int ex5_main() {
+	ex5::Dodecaphonic row, res;
+	int interval, n;
+
+	const int argc = 14;
+	char *argv[argc] = { "ZZZ", "-oN", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11" };
+
+	if (argc != 14 || argv[1][0] != '-') {
+		printf("usage: %s [-oN | -rN | -iN | -irN]) "
+			"note1 note2 ... note12\n", argv[0]);
+
+		return -1;
+	}
+
+	for (n = 0; n < 12; n++) {
+		row.set(atoi(argv[n + 2]), n);
+	}
+
+	switch (argv[1][1]) {
+	case 'o': // original transposed
+		interval = atoi(argv[1] + 2);
+		res = row.transpose(interval);
+		break;
+	case 'r': // retrograde
+		interval = atoi(argv[1] + 2);
+		res = row.retrograde().transpose(interval);
+		break;
+	case 'i': // inverted
+		if (argv[1][3] != 'r') {
+			interval = atoi(argv[1] + 2);
+			res = row.invert().transpose(interval);
+		}
+		else { // inverted retrograde
+			interval = atoi(argv[1] + 3);
+			res = row.invert().retrograde().transpose(interval);
+		}
+		break;
+	default:
+		printf("unrecognized option \n");
+		return -1;
+	}
+
+	for (n = 0; n < 12; n++) {
+		printf("%d ", res.get(n));
+	}
+
+	printf("\n");
 
 	return 0;
 }
